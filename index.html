@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Loan Tracker</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #27ae60;
+            --edit-color: #2980b9;
+            --background-color: #f8f9fa;
+            --border-color: #cbd5e1;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Form Styling */
+        form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin-bottom: 25px;
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: var(--primary-color);
+        }
+
+        input {
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .btn-container {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+        }
+
+        #submitBtn {
+            background-color: var(--accent-color);
+            flex: 2;
+        }
+
+        #submitBtn:hover {
+            background-color: #219653;
+        }
+
+        #cancelBtn {
+            background-color: #95a5a6;
+            flex: 1;
+            display: none;
+        }
+
+        #cancelBtn:hover {
+            background-color: #7f8c8d;
+        }
+
+        /* Table Styling */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 10px 10px;
+            border: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+        }
+
+        tfoot td {
+            font-weight: bold;
+            background-color: #e2e8f0;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 5px;
+        }
+
+        .edit-btn {
+            background-color: var(--edit-color);
+            padding: 5px 8px;
+            font-size: 11px;
+        }
+
+        .edit-btn:hover {
+            background-color: #2471a3;
+        }
+
+        .delete-btn {
+            background-color: #e74c3c;
+            padding: 5px 8px;
+            font-size: 11px;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Financial Loan Record Tracker</h2>
+    
+    <!-- Entry / Edit Form -->
+    <form id="loanForm">
+        <input type="hidden" id="editIndex" value="">
+        <div class="form-group">
+            <label for="company">Company Name</label>
+            <input type="text" id="company" placeholder="Company" required>
+        </div>
+        <div class="form-group">
+            <label for="date">Date</label>
+            <input type="date" id="date" required>
+        </div>
+        <div class="form-group">
+            <label for="loanAmount">Loan Amount</label>
+            <input type="number" step="0.01" id="loanAmount" placeholder="0.00" required>
+        </div>
+        <div class="form-group">
+            <label for="payableAmount">ගෙවිය යුතු මුදල</label>
+            <input type="number" step="0.01" id="payableAmount" placeholder="0.00" required>
+        </div>
+        <div class="form-group">
+            <label for="dueDate">ගෙවිය යුතු දිනය</label>
+            <input type="date" id="dueDate" required>
+        </div>
+        <div class="form-group">
+            <label for="paidAmount">අලුතින් ගෙවූ මුදල</label>
+            <input type="number" step="0.01" id="paidAmount" placeholder="0.00" value="0" required>
+        </div>
+        <div class="btn-container">
+            <button type="submit" id="submitBtn">Add Record</button>
+            <button type="button" id="cancelBtn" onclick="resetForm()">Cancel</button>
+        </div>
+    </form>
+
+    <!-- Table -->
+    <div class="table-responsive">
+        <table id="loanTable">
+            <thead>
+                <tr>
+                    <th>Company Name</th>
+                    <th>Date</th>
+                    <th>Loan Amount</th>
+                    <th>ගෙවිය යුතු මුදල</th>
+                    <th>ගෙවිය යුතු දිනය</th>
+                    <th>ගෙවූ මුදල</th>
+                    <th>Balance</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="loanTableBody">
+                <!-- Rows will load dynamically -->
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2" style="text-align: right;">Total:</td>
+                    <td id="totalLoan">0.00</td>
+                    <td id="totalPayable">0.00</td>
+                    <td>-</td>
+                    <td id="totalPaid">0.00</td>
+                    <td id="totalBalance">0.00</td>
+                    <td>-</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', loadLoans);
+
+    const form = document.getElementById('loanForm');
+    const loanTableBody = document.getElementById('loanTableBody');
+    const submitBtn = document.getElementById('submitBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const editIndex = document.getElementById('editIndex').value;
+        const company = document.getElementById('company').value;
+        const date = document.getElementById('date').value;
+        const loanAmount = parseFloat(document.getElementById('loanAmount').value) || 0;
+        const payableAmount = parseFloat(document.getElementById('payableAmount').value) || 0;
+        const dueDate = document.getElementById('dueDate').value;
+        const newlyPaid = parseFloat(document.getElementById('paidAmount').value) || 0;
+
+        let loans = getLoansFromStorage();
+
+        if (editIndex === "") {
+            // New Record
+            const balance = payableAmount - newlyPaid;
+            const newLoan = {
+                id: Date.now(),
+                company,
+                date,
+                loanAmount: loanAmount.toFixed(2),
+                payableAmount: payableAmount.toFixed(2),
+                dueDate,
+                paidAmount: newlyPaid.toFixed(2),
+                balance: balance.toFixed(2)
+            };
+            loans.push(newLoan);
+        } else {
+            // Update Existing Record (Add new payment to old paid amount)
+            let loan = loans[editIndex];
+            let totalPaid = parseFloat(loan.paidAmount) + newlyPaid;
+            let balance = payableAmount - totalPaid;
+
+            loans[editIndex] = {
+                ...loan,
+                company,
+                date,
+                loanAmount: loanAmount.toFixed(2),
+                payableAmount: payableAmount.toFixed(2),
+                dueDate,
+                paidAmount: totalPaid.toFixed(2),
+                balance: balance.toFixed(2)
+            };
+        }
+
+        localStorage.setItem('loans', JSON.stringify(loans));
+        loadLoans();
+        resetForm();
+    });
+
+    function getLoansFromStorage() {
+        let loans = localStorage.getItem('loans');
+        return loans ? JSON.parse(loans) : [];
+    }
+
+    function loadLoans() {
+        let loans = getLoansFromStorage();
+        loanTableBody.innerHTML = '';
+        
+        let tLoan = 0, tPayable = 0, tPaid = 0, tBalance = 0;
+
+        loans.forEach((loan, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${loan.company}</td>
+                <td>${loan.date}</td>
+                <td>${loan.loanAmount}</td>
+                <td>${loan.payableAmount}</td>
+                <td>${loan.dueDate}</td>
+                <td>${loan.paidAmount}</td>
+                <td>${loan.balance}</td>
+                <td>
+                    <div class="action-btns">
+                        <button class="edit-btn" onclick="editLoan(${index})">Edit</button>
+                        <button class="delete-btn" onclick="deleteLoan(${loan.id})">Del</button>
+                    </div>
+                </td>
+            `;
+            loanTableBody.appendChild(row);
+
+            tLoan += parseFloat(loan.loanAmount);
+            tPayable += parseFloat(loan.payableAmount);
+            tPaid += parseFloat(loan.paidAmount);
+            tBalance += parseFloat(loan.balance);
+        });
+
+        document.getElementById('totalLoan').innerText = tLoan.toFixed(2);
+        document.getElementById('totalPayable').innerText = tPayable.toFixed(2);
+        document.getElementById('totalPaid').innerText = tPaid.toFixed(2);
+        document.getElementById('totalBalance').innerText = tBalance.toFixed(2);
+    }
+
+    function editLoan(index) {
+        let loans = getLoansFromStorage();
+        let loan = loans[index];
+
+        document.getElementById('editIndex').value = index;
+        document.getElementById('company').value = loan.company;
+        document.getElementById('date').value = loan.date;
+        document.getElementById('loanAmount').value = loan.loanAmount;
+        document.getElementById('payableAmount').value = loan.payableAmount;
+        document.getElementById('dueDate').value = loan.dueDate;
+        document.getElementById('paidAmount').value = "0"; // අලුතින් ගෙවන මුදලට 0 දාලා දෙන්නේ අලුත් වාරිකය ලියන්න පහසු වෙන්න
+        
+        submitBtn.innerText = "Update Record";
+        cancelBtn.style.display = "block";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetForm() {
+        form.reset();
+        document.getElementById('editIndex').value = "";
+        document.getElementById('paidAmount').value = "0";
+        submitBtn.innerText = "Add Record";
+        cancelBtn.style.display = "none";
+    }
+
+    function deleteLoan(id) {
+        if(confirm("Are you sure you want to delete this record?")) {
+            let loans = getLoansFromStorage();
+            loans = loans.filter(loan => loan.id !== id);
+            localStorage.setItem('loans', JSON.stringify(loans));
+            loadLoans();
+        }
+    }
+</script>
+
+</body>
+</html>
